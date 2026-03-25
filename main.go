@@ -27,7 +27,7 @@ func entropy(name string) (n float64, err error) {
 		return
 	}
 
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	buf, err := io.ReadAll(f)
 
@@ -50,20 +50,18 @@ func entropy(name string) (n float64, err error) {
 		}
 	}
 
-	n /= 8
-
 	return
 }
 
 func main() {
 	if len(os.Args) == 1 || os.Args[1] == "--help" {
-		fmt.Fprintln(os.Stderr, "usage: entropy PATH")
+		_, _ = fmt.Fprintln(os.Stderr, "usage: entropy PATH")
 		os.Exit(2)
 	}
 
 	err := filepath.WalkDir(os.Args[1], func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			return nil
 		}
 
@@ -74,22 +72,22 @@ func main() {
 		val, err := entropy(path)
 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			return nil
 		}
 
 		abs, err := filepath.Abs(path)
 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			return nil
 		}
 
-		fmt.Printf("%.10f  %s\n", val, abs)
+		_, _ = fmt.Printf("%.10f  %s\n", val, abs)
 		return nil
 	})
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		_, _ = fmt.Fprintln(os.Stderr, err)
 	}
 }
