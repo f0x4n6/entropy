@@ -1,3 +1,3 @@
-module github.com/f0x4n6/entropy
+module go.foxforensics.dev/entropy
 
 go 1.26

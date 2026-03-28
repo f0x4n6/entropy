@@ -55,7 +55,7 @@ func entropy(name string) (n float64, err error) {
 
 func main() {
 	if len(os.Args) == 1 || os.Args[1] == "--help" {
-		_, _ = fmt.Fprintln(os.Stderr, "usage: entropy PATH")
+		_, _ = fmt.Fprintln(os.Stderr, "usage: entropy path")
 		os.Exit(2)
 	}
 
