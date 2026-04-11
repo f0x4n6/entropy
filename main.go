@@ -12,46 +12,14 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
-	"math"
 	"os"
 	"path/filepath"
+
+	"go.foxforensics.dev/go-mmap"
+
+	"go.foxforensics.dev/entropy/pkg/entropy"
 )
-
-// https://gist.github.com/n2p5/4eda328b080c9f09eff928ad47228ab1
-func entropy(name string) (n float64, err error) {
-	f, err := os.Open(name)
-
-	if err != nil {
-		return
-	}
-
-	defer func() { _ = f.Close() }()
-
-	buf, err := io.ReadAll(f)
-
-	if err != nil {
-		return
-	}
-
-	a := make([]float64, 256)
-
-	for _, b := range buf {
-		a[b]++
-	}
-
-	l := float64(len(buf))
-
-	for i := range 256 {
-		if a[i] != 0 {
-			v := a[i] / l
-			n -= v * math.Log2(v)
-		}
-	}
-
-	return
-}
 
 func main() {
 	if len(os.Args) == 1 || os.Args[1] == "--help" {
@@ -69,25 +37,39 @@ func main() {
 			return nil
 		}
 
-		val, err := entropy(path)
+		path, err = filepath.Abs(path)
 
 		if err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 			return nil
 		}
 
-		abs, err := filepath.Abs(path)
+		f, err := os.Open(path)
 
 		if err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 			return nil
 		}
 
-		_, _ = fmt.Printf("%.10f  %s\n", val, abs)
+		defer func() { _ = f.Close() }()
+
+		m, err := mmap.Map(f, mmap.RDONLY, 0)
+
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+			return nil
+		}
+
+		defer func() { _ = m.Unmap() }()
+
+		e := entropy.Calculate(m)
+
+		_, _ = fmt.Printf("%0.10f  %s\n", e, path)
 		return nil
 	})
 
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
