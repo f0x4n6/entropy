@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-var random = filepath.Join("testdata", "random.bin")
+var random = filepath.Join("..", "testdata", "random.bin")
 
 func TestCalculate(t *testing.T) {
 	t.Run("Test Calculate", func(t *testing.T) {

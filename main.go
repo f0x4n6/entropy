@@ -18,7 +18,7 @@ import (
 
 	"go.foxforensics.dev/go-mmap"
 
-	"go.foxforensics.dev/entropy/pkg/entropy"
+	"go.foxforensics.dev/entropy/entropy"
 )
 
 func main() {
