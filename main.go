@@ -1,4 +1,4 @@
-// File entropy calculation tool.
+// Calculate file entropy.
 //
 // Usage:
 //

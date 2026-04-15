@@ -1,5 +1,5 @@
 # Entropy
-File entropy calculation tool.
+Calculate file entropy.
 
 ```console
 go install go.foxforensics.dev/entropy@latest
